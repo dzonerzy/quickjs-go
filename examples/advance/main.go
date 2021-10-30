@@ -4,7 +4,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/quickjs-go/quickjs-go"
+	"github.com/dzonerzy/quickjs-go"
 )
 
 type callback func(string) string

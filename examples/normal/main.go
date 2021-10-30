@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/quickjs-go/quickjs-go"
+	"github.com/dzonerzy/quickjs-go"
 )
 
 func check(err error) {
