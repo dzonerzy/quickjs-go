@@ -1,4 +1,4 @@
-module github.com/quickjs-go/quickjs-go
+module github.com/dzonerzy/quickjs-go
 
 go 1.15
 
