@@ -236,6 +236,47 @@ type Context struct {
 	proxy   *Value
 }
 
+func (ctx *Context) Binary(script string, filename string) ([]byte, error) {
+	scriptCstr := C.CString(script)
+	defer C.free(unsafe.Pointer(scriptCstr))
+	scriptClen := C.ulong(len(script))
+	filenameCstr := C.CString(filename)
+	defer C.free(unsafe.Pointer(filenameCstr))
+	obj := C.JS_Eval(
+		ctx.ref,
+		scriptCstr,
+		scriptClen,
+		filenameCstr,
+		C.JS_EVAL_TYPE_GLOBAL|C.JS_EVAL_FLAG_COMPILE_ONLY,
+	)
+	val := Value{ctx: ctx, ref: obj}
+	defer val.Free()
+	if val.IsException() {
+		return nil, ctx.Exception()
+	}
+	outBufLen := C.size_t(0)
+	outBuf := C.JS_WriteObject(ctx.ref, &outBufLen, obj, C.JS_WRITE_OBJ_BYTECODE)
+	return C.GoBytes(unsafe.Pointer(outBuf), C.int(outBufLen)), nil
+}
+
+func (ctx *Context) EvalBinary(buf []byte) (Value, error) {
+	val := Value{
+		ctx: ctx,
+		ref: C.JS_ReadObject(ctx.ref, (*C.uchar)(unsafe.Pointer(&buf[0])), C.ulong(len(buf)), C.int(1)),
+	}
+	if val.IsException() {
+		return Value{}, ctx.Exception()
+	}
+	tmpval := Value{
+		ctx: ctx,
+		ref: C.JS_EvalFunction(ctx.ref, val.ref),
+	}
+	if tmpval.IsException() {
+		return Value{}, ctx.Exception()
+	}
+	return tmpval, nil
+}
+
 func (ctx *Context) Free() {
 	if ctx.proxy != nil {
 		ctx.proxy.Free()

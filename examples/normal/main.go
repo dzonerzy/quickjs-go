@@ -40,6 +40,23 @@ func main() {
 
 	// Test evaluating numeric expressions.
 
+	/* test bytecode */
+	/*ret, err := context.Binary(`
+	(function(global) {
+		global.Deaf = function() {
+			return 1;
+		};
+	})(this)
+	`, "<code>")
+	check(err)
+	fmt.Println(ret)*/
+	ret := []byte{2, 2, 12, 60, 99, 111, 100, 101, 62, 8, 68, 101, 97, 102, 14, 0, 6, 0, 160, 1, 0, 2, 0, 2, 0, 1, 8, 2, 162, 1, 0, 0, 0, 16, 0, 1, 0, 8, 202, 192, 0, 198, 239, 205, 40, 194, 3, 1, 3, 0, 2, 10, 14, 67, 6, 0, 0, 1, 0, 1, 2, 0, 1, 9, 1, 220, 1, 0, 1, 0, 209, 192, 0, 67, 226, 0, 0, 0, 41, 194, 3, 2, 3, 3, 9, 38, 14, 67, 6, 0, 0, 0, 0, 0, 1, 0, 0, 2, 0, 182, 40, 194, 3, 3, 1, 3}
+	result, err = context.EvalBinary(ret)
+	check(err)
+	fmt.Println(result)
+
+	/* end */
+
 	result, err = context.Eval(`1 + 2 * 100 - 3 + Math.sin(10)`, quickjs.EVAL_GLOBAL)
 	check(err)
 	defer result.Free()
